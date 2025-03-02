@@ -1,7 +1,7 @@
 TexturizR
 ========
 
-Simple library for transforming text from one case to another.
+Flexible text transformation library for converting between different cases and structures.
 
 ### Installing TexturizR.
 
@@ -9,74 +9,115 @@ TexturizR can be installed from nuget
 
     Install-Package TexturizR
 
-or using the dotnet clr
+or using the .NET CLR
 
     dotnet add package TexturizR
 
-### Parsing a Phrase
+### Overview
 
-TexturizR uses a fluent builder style syntax that allows you full control over the transformation process. This allows you to specify how the source text should be parsed, which letters of the phrase should be upper case, and what word delimiters to use for the transformed string. If you can imagine a case, you should be able to reproduce it.
+TexturizR uses a fluent builder-style syntax, giving you full control over the transformation process. You can:
 
-To begin building a phrase, start by calling one of the following extension methods on a string...
+- Convert between various formats (camelCase, PascalCase, kebab-case, snake_case, and more).
+- Control capitalization rules for each word.
+- Specify custom delimiters for output formatting.
+
+If you can imagine a text format, **TexturizR can transform it**.
+
+### Declaring the Current Case or Structure
+
+To begin transforming text, first declare its existing format using one of the following parsing methods:
 
 #### AsPhrase()
 
-Parses a phrase which uses whitespace to separate words.
+Declares a phrase made up of **whitespace-separated words** (e.g. "The quick brown fox").
 
 #### AsCamelCasePhrase()
 
-Parses a phrase which uses capital letters to indicate the start of a new word. Works for Camel and Pascal case strings.
+Declares a phrase where capital letters indicate new words. This works for:
+
+- camelCase (e.g. "theQuickBrownFox")
+- PascalCase (e.g. "TheQuickBrownFox")
 
 #### AsDelimitedPhrase(string wordSeparator)
 
-Parses a phrase which uses a specified string to separate words.
+Declares a phrase where words are separated by a specific character.
+
+- **kebab-case** (e.g. "the-quick-brown-fox")
+- **snake_case** (e.g. "the_quick_brown_fox")
+- **Custom delimiter** (e.g. "the|quick|brown|fox") 
 
 ### Transforming a Phrase
 
-Once you have a phrase builder you can chain calls to the following methods fluently to configure how the transformed phrase will appear.
+Once you have a phrase builder you can fluently chain calls to configure the transformed text.
 
-#### Capitalize(PhraseCapitalization capitalization)
+#### Capitalization Rules
 
-This sets which letters of the output phrase will be capitalized. This can be one of the following...
+Controls which letters in the output phrase will be capitalized.
 
-**Default**: Do not change the casing from the original string. This is the default value.
+##### Capitalize(PhraseCapitalization capitalization)
 
-**None**: all characters in the output string will be lower case.
+Can be configured with one of the following values:
 
-**EachLetter**: ALL CHARACTERS IN THE OUTPUT STRING WILL BE UPPER CASE.
+- **Default** - Keeps the original casing (default).
 
-**EachWord**: Each Word In The Output String Will Start With An Upper Case Letter, All Others Will Be Lower Case.
+- **None** - Converts all characters to **lowercase**.
 
-**FirstWord**: The first word in the output string will start with an upper case letter, all other letters will be lower case.
+- **EachLetter** - Converts all characters to **UPPERCASE**.
 
-**TrailingWords**: all Words Except For The First Will Start With A Upper Case Letter. All Other Letters Will Be Lower Case.
+- **EachWord** - Capitalizes **Each Word Like This**
 
-#### JoinWordsWith(string wordSeparator)
+- **FirstWord** - Capitalizes **Only the first letter of the first word like this**
 
-This sets the delimiter to be used when building the transformed string.
+- **TrailingWords**: Capitalizes **the First Letter Of All Words Except The First Like This**
 
-#### JoinWords()
+#### Word Separation
 
-This is an alias for JoinWordsWith(String.Empty). Used for building Camel and Pascal case phrases.
+Controls how words are joined in the transformed phrase.
 
-#### ToString()
+##### JoinWordsWith(string wordSeparator)
 
-This generates the configured string.
+This sets the delimiter to be used when building the transformed string:
+
+- JoinWordsWith("-") - Converts to **kebab-case**
+- JoinWordsWith("_") - Converts to **snake_case**
+
+##### JoinWords()
+
+Alias for JoinWordsWith(String.Empty). Used for building Camel and Pascal case phrases.
+
+#### Generating the Final String
+
+##### ToString()
+
+Call .ToString() to produce the final transformed string.
 
 ### Examples
 
+#### Convert camelCase to UPPER_SNAKE_CASE
+
 ```csharp
-// camelCase to UPPER_SNAKE_CASE
+// Input: "theQuickBrownFox" -> Output: "THE_QUICK_BROWN_FOX".
 var upperSnake = "theQuickBrownFox"
     .AsCamelCasePhrase()
     .Capitalize(PhraseCapitalization.EachLetter)
     .JoinWordsWith("_")
     .ToString();
+```
 
-// kebab-case to PascalCase
+#### Convert kebab-case to PascalCase
+
+```csharp
+// Input: "the-quick-brown-fox" -> Output: "TheQuickBrownFox".
 var pascal = "the-quick-brown-fox"
     .AsDelimitedPhrase("-")
     .Capitalize(PhraseCapitalization.EachWord)
     .JoinWords()
     .ToString();
 ```
+
+### Why Use TexturizR?
+
+- [x] **Intuitive Fluent API** - Chain methods to build transformations naturally.
+- [x] **Supports Multiple Formats** - Easily switch between camelCase, PascalCase, kebab-case, snake_case, and more.
+- [x] **Fully Customizable** – Define your own delimiters and capitalization rules.
+- [x] **Lightweight & Fast** – Built for performance and simplicity.
